@@ -15,9 +15,14 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
       - name: Unpack project + Vosk model
         run: |
-          unzip -q -o Air.zip -d src
+          mkdir -p src
+          tar -xJf air.tar.xz -C src
           cd src/Air
           curl -sL -o model.zip https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
           unzip -q model.zip
@@ -26,9 +31,7 @@ jobs:
 
       - name: Build
         working-directory: src/Air
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
